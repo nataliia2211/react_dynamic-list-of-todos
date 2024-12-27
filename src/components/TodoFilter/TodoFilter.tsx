@@ -1,4 +1,6 @@
+import classNames from 'classnames';
 import React from 'react';
+import { Field } from '../../types/FilterField';
 
 type Props = {
   query: string;
@@ -41,7 +43,9 @@ export const TodoFilter: React.FC<Props> = ({
       </span>
 
       {query && (
-        <span className="icon is-right" style={{ pointerEvents: 'all' }}>
+        <span
+          className={classNames('icon is-right', { pointerEvents: Field.All })}
+        >
           <button
             data-cy="clearSearchButton"
             type="button"

@@ -11,50 +11,50 @@ import { Loader } from './components/Loader';
 import { Todo } from './types/Todo';
 import { getTodos, getUser } from './api';
 import { User } from './types/User';
+import { Field } from './types/FilterField';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [filteredField, setFilteredField] = useState<string>('All');
+  const [filteredField, setFilteredField] = useState<Field | string>(Field.All);
   const [query, setQuery] = useState<string>('');
 
   const preparedTodos = todos.filter(todo => {
-    if (filteredField === 'completed') {
-      return todo.completed === true;
-    }
+    const filteredByField = (() => {
+      switch (filteredField) {
+        case Field.Completed:
+          return todo.completed === true;
+        case Field.Active:
+          return todo.completed === false;
+        default:
+          return true;
+      }
+    })();
 
-    if (filteredField === 'active') {
-      return todo.completed === false;
-    }
+    const filteredByQuery = query
+      ? todo.title.toLowerCase().includes(query.toLowerCase())
+      : true;
 
-    return true;
-  });
-
-  const filteredTodos = preparedTodos.filter(todo => {
-    if (query) {
-      return todo.title.toLowerCase().includes(query.toLowerCase());
-    }
-
-    return true;
+    return filteredByField && filteredByQuery;
   });
 
   useEffect(() => {
-    setLoading(true);
+    setIsLoading(true);
 
     getTodos()
       .then(setTodos)
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   }, []);
 
   const handelTodo = (todo: Todo) => {
-    setLoading(true);
+    setIsLoading(true);
     setSelectedTodo(todo);
 
     getUser(todo.userId)
       .then(setUser)
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
 
   const handleChangeStatus = (newStatus: string) => {
@@ -67,7 +67,7 @@ export const App: React.FC = () => {
 
   const onReset = () => {
     setQuery('');
-    setFilteredField('All');
+    setFilteredField(Field.All);
     setSelectedTodo(null);
     setUser(null);
   };
@@ -89,9 +89,9 @@ export const App: React.FC = () => {
             </div>
 
             <div className="block">
-              {loading && <Loader />}
+              {isLoading && <Loader />}
               <TodoList
-                todos={filteredTodos}
+                todos={preparedTodos}
                 showSelectedTodo={handelTodo}
                 selectedTodo={selectedTodo}
               />
@@ -103,8 +103,8 @@ export const App: React.FC = () => {
         <TodoModal
           user={user}
           todo={selectedTodo}
-          loading={loading}
           onReset={onReset}
+          setUser={setUser}
         />
       )}
     </>

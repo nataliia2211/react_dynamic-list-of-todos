@@ -1,24 +1,35 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Loader } from '../Loader';
 import { Todo } from '../../types/Todo';
 import { User } from '../../types/User';
 import classNames from 'classnames';
+import { getUser } from '../../api';
 
 type Props = {
-  loading: boolean;
   todo: Todo | null;
   user: User | null;
   onReset: () => void;
+  setUser: Dispatch<SetStateAction<User | null>>;
 };
 
 export const TodoModal: React.FC<Props> = props => {
-  const { todo, user, loading, onReset } = props;
+  const { todo, user, onReset, setUser } = props;
+  const [isTodoLoading, setIsTodoLoading] = useState(false);
+
+  useEffect(() => {
+    setIsTodoLoading(true);
+    if (todo) {
+      getUser(todo.userId)
+        .then(setUser)
+        .finally(() => setIsTodoLoading(false));
+    }
+  }, [todo, setUser, todo?.userId]);
 
   return (
     <div className="modal is-active" data-cy="modal">
       <div className="modal-background" />
 
-      {loading ? (
+      {isTodoLoading ? (
         <Loader />
       ) : (
         <div className="modal-card">

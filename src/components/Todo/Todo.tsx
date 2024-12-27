@@ -38,15 +38,14 @@ export const TodoItem: React.FC<Props> = props => {
           type="button"
           onClick={() => showSelectedTodo(todo)}
         >
-          {todo.id === selectedTodo?.id ? (
-            <span className="icon">
-              <i className="far fa-eye-slash" />
-            </span>
-          ) : (
-            <span className="icon">
-              <i className="far fa-eye" />
-            </span>
-          )}
+          <span className="icon">
+            <i
+              className={classNames({
+                'far fa-eye-slash': todo.id === selectedTodo?.id,
+                'far fa-eye': todo.id !== selectedTodo?.id,
+              })}
+            />
+          </span>
         </button>
       </td>
     </tr>

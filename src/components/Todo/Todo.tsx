@@ -11,6 +11,8 @@ type Props = {
 export const TodoItem: React.FC<Props> = props => {
   const { todo, showSelectedTodo, selectedTodo } = props;
 
+  const isSelectedTodo = todo.id === selectedTodo?.id;
+
   return (
     <tr data-cy="todo" className="">
       <td className="is-vcentered">{todo.id}</td>
@@ -41,8 +43,8 @@ export const TodoItem: React.FC<Props> = props => {
           <span className="icon">
             <i
               className={classNames({
-                'far fa-eye-slash': todo.id === selectedTodo?.id,
-                'far fa-eye': todo.id !== selectedTodo?.id,
+                'far fa-eye-slash': isSelectedTodo,
+                'far fa-eye': !isSelectedTodo,
               })}
             />
           </span>

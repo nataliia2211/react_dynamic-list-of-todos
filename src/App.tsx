@@ -25,9 +25,9 @@ export const App: React.FC = () => {
     const filteredByField = (() => {
       switch (filteredField) {
         case Field.Completed:
-          return todo.completed === true;
+          return todo.completed;
         case Field.Active:
-          return todo.completed === false;
+          return !todo.completed;
         default:
           return true;
       }
@@ -48,7 +48,7 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const handelTodo = (todo: Todo) => {
+  const handleTodo = (todo: Todo) => {
     setIsLoading(true);
     setSelectedTodo(todo);
 
@@ -92,7 +92,7 @@ export const App: React.FC = () => {
               {isLoading && <Loader />}
               <TodoList
                 todos={preparedTodos}
-                showSelectedTodo={handelTodo}
+                showSelectedTodo={handleTodo}
                 selectedTodo={selectedTodo}
               />
             </div>
